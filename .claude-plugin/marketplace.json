@@ -1,0 +1,24 @@
+{
+  "name": "daniyalasyed-skills",
+  "description": "Skills by Daniyal A. Syed — practical Claude skills for writing, personal branding, and product work.",
+  "owner": {
+    "name": "Daniyal A. Syed",
+    "url": "https://github.com/daniyalasyed"
+  },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "lived-experience-miner",
+      "displayName": "Lived Experience Miner",
+      "source": "lived-experience-miner",
+      "description": "A writing coach that interviews you to surface a real story before you draft a LinkedIn post. It never writes the post. Method by Matt Barker (mattbarker.xyz), packaged as a skill.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Daniyal A. Syed",
+        "url": "https://github.com/daniyalasyed"
+      }
+    }
+  ]
+}
