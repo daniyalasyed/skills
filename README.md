@@ -13,14 +13,14 @@ Add the marketplace once:
 Then install whichever plugin you want:
 
 ```
-/plugin install lived-experience-miner@daniyalasyed-skills
+/plugin install lived-experience-miner-by-matt-barker@daniyalasyed-skills
 ```
 
 Update later with `/plugin marketplace update daniyalasyed-skills`.
 
 ## Plugins
 
-### Lived Experience Miner
+### Lived Experience Miner by Matt Barker
 
 A writing coach for the step most people skip: finding the real story before writing the post.
 

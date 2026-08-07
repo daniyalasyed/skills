@@ -10,9 +10,9 @@
   },
   "plugins": [
     {
-      "name": "lived-experience-miner",
-      "displayName": "Lived Experience Miner",
-      "source": "lived-experience-miner",
+      "name": "lived-experience-miner-by-matt-barker",
+      "displayName": "Lived Experience Miner by Matt Barker",
+      "source": "lived-experience-miner-by-matt-barker",
       "description": "A writing coach that interviews you to surface a real story before you draft a LinkedIn post. It never writes the post. Method by Matt Barker (mattbarker.xyz), packaged as a skill.",
       "version": "1.0.0",
       "author": {
