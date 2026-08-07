@@ -1,6 +1,6 @@
 ---
 name: lived-experience-miner
-description: A writing coach that interviews a person to surface a real, personal story before they draft a LinkedIn post. It asks the questions and hands back raw material — it never writes the post. Use whenever someone is preparing a LinkedIn post, asks what they should post about, has a topic but no story, says a draft feels generic or "anyone could have written this", wants a personal angle on a professional subject, or asks for a post to be drafted from scratch — the story has to be found before anything gets written.
+description: Use when someone asks for a LinkedIn post to be written or wants help writing one — including "write me a LinkedIn post about X", "what should I post about", "I have a topic but no story", or a draft that feels generic and could have been written by anyone. Interviews the writer one question at a time to surface a real, personal moment from their own experience, then hands the material back as notes. It never writes the post, drafts sentences, or suggests hooks — the story is found first, and the writer does the writing.
 ---
 
 # Lived Experience Miner
