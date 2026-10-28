@@ -1,0 +1,18 @@
+# Public bug reports behind this skill
+
+All are in the `anthropics/claude-code` GitHub repository, read in October 2026. None has a reply from Anthropic; most were closed by a bot for inactivity, which says nothing about whether they were fixed. Treat each as a report, not a confirmed behaviour.
+
+| Issue | Reported | What it means here |
+|---|---|---|
+| [#33636](https://github.com/anthropics/claude-code/issues/33636) | Windows, VS Code, v2.1.72: after moving a folder, its chats were gone from the list. They were still on disk, filed under the old path. | The central problem. A folder move must rename the chat folder too. |
+| [#27473](https://github.com/anthropics/claude-code/issues/27473) | Linux, v2.1.50: same, from the terminal; resume by ID also failed then. Moving the folder back brought the chats back. | Same fix. Newer versions find a chat by ID in any folder, but the list still shows only the current folder's chats. |
+| [#41344](https://github.com/anthropics/claude-code/issues/41344) | Windows: after a move, an old chat opened from the new place loaded blank, and the next message overwrote its file with an empty history. Closed as a duplicate of #33636; never reproduced. | Why the chat folder is renamed before anyone opens the new path, why everything is backed up first, and why a throwaway test chat is reopened before any real one. Current docs say Claude Code now sets a replaced transcript aside instead; unconfirmed. |
+| [#21085](https://github.com/anthropics/claude-code/issues/21085) | macOS: two different folders mapped to one chat-folder name, because `/`, `-` and `_` all become `-`. | The inventory stops when the new name is already taken. |
+| [#85595](https://github.com/anthropics/claude-code/issues/85595) | Linux: in a repository subfolder, chats are filed under the subfolder but memory comes from the repository root. A comment reports one folder under two chat-folder names, one keeping `_` and one turning it into `-`; the `_` one was older and empty. | Moving a subfolder moves its chats, not the repository's memory. An empty look-alike chat folder can exist; the inventory lists every name that matches. |
+| [#101500](https://github.com/anthropics/claude-code/issues/101500) | Linux, open: a chat resumed after its memory folder changed still told Claude to save memory in the old folder. | After a memory move, check the old memory folder for notes that old chats saved there. |
+| [#73317](https://github.com/anthropics/claude-code/issues/73317) | Windows, desktop app: `.claude.json` entries were re-keyed from `C:\` to `C:/` spellings and the trust answer was lost. | `.claude.json` isn't edited by this skill; the user re-answers trust if asked. |
+| [#19300](https://github.com/anthropics/claude-code/issues/19300) | macOS: trust is stored by path only, so a new folder created at a trusted path is trusted without asking. | Copying a trust entry to a new path is a security risk; the skill never does it. |
+
+## Tools that were checked and not used
+
+Earlier move tools for Claude Code (claude-mv, ccmv and several published skills) were read in October 2026. Each failed on at least one of these: it built chat-folder names with the Mac/Linux rule only, so Windows paths came out wrong; it edited chat files; it kept the old chat folder inside `projects` as its backup, which makes duplicate chats; or it checked for a running process with `os.kill(pid, 0)`, which on Windows sends Ctrl+C instead (Python docs: signal 0 there is `CTRL_C_EVENT`). Ideas kept from them: back up first, show a dry run of every change, scan for the old path afterwards, refuse to run while a chat is open, and finish with a way to undo.

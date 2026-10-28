@@ -1,0 +1,17 @@
+# Windows
+
+Tested here: Windows 11, VS Code extension and terminal, Claude Code 2.1.289.
+
+- **Python:** `python` or `py -3`. Python prints Windows paths with single backslashes; in a script, write a Windows path as a raw string (`r"C:\Users\…"`), or `\U` is read as an escape code and the script fails before it runs.
+- **Commands:** write every command that holds a Windows path into a script file and run the file. Paths typed inline lose backslashes on the way to the shell.
+- **Chat-folder names:** `C:\Users\ana\my app` becomes `C--Users-ana-my-app`. The VS Code extension can write `c--` instead of `C--`; Windows ignores letter case, so they are one folder, and a rename between them is a case-only rename.
+- **Folders in use:** Windows refuses to rename a folder any program has open, including a terminal sitting in it, an Explorer window, an editor window and a running chat. `apply` stops with the error. To find what holds it: Resource Monitor → CPU tab → Associated Handles → search for the folder name. Close that program, run `check-closed`, then `apply` again only with the user's yes; the stop rule forbids retrying on your own.
+- **A folder busy after a chat ends [tested]:** right after a headless chat ended in a folder, Windows refused to rename that folder ("Access is denied") for a few minutes, while no running process named the folder. A plugin's session-end hook had started a background save there. `test-chat` now switches hooks off for its own runs, and the test chat is made before the backup so there is time in between. If `apply` still stops this way, follow step 6's instructions.
+- **Running-chat check:** `check-closed` asks `tasklist` whether each recorded process runs. `os.kill(pid, 0)` isn't a check on Windows: signal 0 is Ctrl+C there.
+- **Path length:** classic Windows paths stop at 259 characters. The inventory measures the longest path after the move and stops above that. Options to offer: a shorter destination; switching on long-path support (an administrator change only the user can approve); or, in code projects, deleting and reinstalling `node_modules`.
+- **Path spellings in files:** `C:\Users\…`, `C:/Users/…`, `C:\\Users\\…` (JSON and code), `/c/Users/…` (Git Bash), `/mnt/c/Users/…` (WSL), `~/…` and `%USERPROFILE%\…`. The inventory finds them all and writes the new path in the same spelling.
+- **Shortcuts:** `.lnk` files are binary. The inventory finds shortcuts on the Desktop (also a OneDrive Desktop) and in the Start Menu whose target, arguments or start-in folder name the folder. A shortcut can name a folder only in its arguments, such as a PowerShell script path. Fix each by hand, or with the user's yes through PowerShell: `$s=(New-Object -ComObject WScript.Shell).CreateShortcut('<path>.lnk'); $s.TargetPath`, `$s.Arguments` and `$s.WorkingDirectory`, then `$s.Save()`.
+- **Names with an apostrophe or `&`:** quote them in every command; in PowerShell, single-quoted strings double an apostrophe (`'Ana''s notes'`).
+- **Copy tool:** if you copy with `robocopy` for any reason, exit codes 0 to 7 mean success; 1 means files were copied.
+- **Left alone:** Windows' recent-files list and VS Code's recent-folders list. They are automatic history and refresh as the user opens files.
+- **Large chat folders:** a chat folder can hold over a gigabyte. A rename on one drive is instant; the backup copy takes time and space, so tell the user the size from the inventory first.

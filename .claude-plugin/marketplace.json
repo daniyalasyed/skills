@@ -19,6 +19,17 @@
         "name": "Daniyal A. Syed",
         "url": "https://github.com/daniyalasyed"
       }
+    },
+    {
+      "name": "moving-claude-project-folders",
+      "displayName": "Moving Claude Project Folders",
+      "source": "moving-claude-project-folders",
+      "description": "Rename or move a folder you use with Claude Code without losing its chats, memory or settings; also moves chats or memory notes between folders and recovers chats left behind by an earlier move. Claude Code only.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Daniyal A. Syed",
+        "url": "https://github.com/daniyalasyed"
+      }
     }
   ]
 }

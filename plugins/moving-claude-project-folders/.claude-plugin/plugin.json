@@ -1,0 +1,18 @@
+{
+  "name": "moving-claude-project-folders",
+  "description": "Rename or move a folder you use with Claude Code without losing its chats, memory or settings. Also moves chats or memory notes from one folder to another, and recovers chats left behind by an earlier move. Backs up first, tests with a throwaway chat, checks every result and can undo. Claude Code only.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Daniyal A. Syed",
+    "url": "https://github.com/daniyalasyed"
+  },
+  "keywords": [
+    "claude-code",
+    "chats",
+    "sessions",
+    "memory",
+    "folders",
+    "rename",
+    "move"
+  ]
+}

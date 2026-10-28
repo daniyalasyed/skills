@@ -37,6 +37,26 @@ The test it applies to everything it finds: **"Can someone else write this?"** I
 
 **When it doesn't:** LinkedIn profile or headline reviews, DMs and connection requests, algorithm and timing tactics, company-page content calendars, or writing for other platforms.
 
+### Moving Claude Project Folders
+
+**Claude Code only.** It works on the files Claude Code keeps on your computer, so it can't run on claude.ai. The build makes a zip for it like every skill here, but that zip won't work on claude.ai.  
+**Claude Code:** `/plugin install moving-claude-project-folders@daniyalasyed-skills`
+
+Rename or move a folder you've used with Claude Code without losing its chats, memory or settings.
+
+Claude Code files every chat, and the memory it keeps, under a name built from the full path of the folder the chat started in. Rename or move the folder and Claude Code looks in a new, empty place: the old chats disappear from the list and memory stops loading. This skill moves the folder and everything tied to it together.
+
+It works in fixed steps: a read-only inventory, a change list you approve, a fingerprinted backup, a throwaway test chat that is moved and reopened before any real chat, the move itself, a full set of checks, and a one-command undo. It never edits chat files.
+
+It also moves chosen chats or memory notes from one folder to another, and recovers chats left behind when a folder was moved by hand.
+
+**Needs:** Python 3.8 or later.  
+**Tested on:** Windows 11 with Claude Code 2.1.289. macOS and Linux follow Anthropic's documentation and haven't been tested; the skill says which facts come from where.
+
+**When it triggers:** you want to rename, move or reorganize folders you use with Claude Code, move past conversations into another project, split or merge a folder's chats or memory, or your chats vanished after a folder moved.
+
+**When it doesn't:** renaming code or moving files inside a project.
+
 ## Credit
 
 The Lived Experience Miner method — the three depths, the time prompts, the "can someone else write this?" test, and the coaching rules — is **Matt Barker's** (<https://www.mattbarker.xyz/>). He wrote and shared it as a Claude Project prompt.
