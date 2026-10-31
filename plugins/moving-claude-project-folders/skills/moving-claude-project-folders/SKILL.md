@@ -96,7 +96,7 @@ For a folder move, `inventory --new` drafted `plan.json` in the work folder. For
 - Move each **dated record** from `line_changes` to `leave_as_is`, with the reason. A dated record describes the past: a handoff, a log, a changelog, a dated note, a backup. It stays true as written.
 - Rewrite any `after` text in a line that records history, such as "moved here from <old path>". A plain path swap would make the record false.
 - Add `line_changes` for the `--also-search` hits, with the new wording written out.
-- For chat and memory moves, add both working folders to `closed_check`.
+- For a memory move, add both working folders to `closed_check`. A chat move needs only the chats being moved closed: `apply` checks them by chat ID, so other chats in the same folders can keep running.
 
 Then run `check-plan "<work folder>/plan.json"`. It writes `changes.md` and prints `PLAN OK` or each `FAIL`. Show the user the moves as a short old-to-new table in the chat, and give them the path to `changes.md` for the line-by-line detail. They approve the decisions; they don't need to read every line.
 
@@ -104,7 +104,7 @@ Done when `check-plan` prints `PLAN OK` and the user said yes to the change list
 
 ### 3. Test chat
 
-Skip this step when the inventory found no chat folder to move. Otherwise tell the user it sends two one-line messages on a small model, then run the test chat before the backup, so it is in the backup and anything it started has finished before the move. Keep its record in the work folder: `--record "<work folder>/test-chat.json"`.
+Skip this step when the inventory found no chat folder to move. Otherwise run step 5's check first, so nothing is created while something blocks the move: on the moving folder for a folder move, or `check-closed --chats <id> …` on the moving chats for a chat move. Then tell the user it sends two one-line messages on a small model, then run the test chat before the backup, so it is in the backup and anything it started has finished before the move. Keep its record in the work folder: `--record "<work folder>/test-chat.json"`.
 
 - **Folder move:** `test-chat create --dir "<folder now>"`. The test chat moves with its chat folder in step 6 and is checked right after it.
 - **Chat move:** `test-chat create` in the source folder, `test-chat move --dir "<destination folder>"`, then `test-chat check --dir "<destination folder>"`.
@@ -123,13 +123,14 @@ It copies every chat folder, chat, memory note and file the plan changes, finger
 
 ### 5. Nothing open
 
-Ask the user to close every chat, terminal, editor window and file browser window that has a moving folder, or a folder inside one, open. In VS Code, tell them to open folders only through File → New Window, then Open Folder in the new window. Open Folder in the window running this chat would end this chat.
+For a folder or memory move, ask the user to close every chat, terminal, editor window and file browser window that has a moving folder, or a folder inside one, open. For a chat move, ask them to close only the chats being moved. In VS Code, tell them to open folders only through File → New Window, then Open Folder in the new window. Open Folder in the window running this chat would end this chat.
 
 ```
 python3 <skill>/scripts/claude_move.py check-closed "<folder>" ["<folder>" …]
+python3 <skill>/scripts/claude_move.py check-closed --chats <chat id> [<chat id> …]
 ```
 
-Done when it prints `NOTHING OPEN`. Run it again right before step 6 if anything happened in between.
+Use the first form for folder and memory moves, the second for a chat move: there only the moving chats must be closed. Each open chat or window is printed with its process and folder. Done when it prints `NOTHING OPEN`. Run it again right before step 6 if anything happened in between.
 
 ### 6. Change
 

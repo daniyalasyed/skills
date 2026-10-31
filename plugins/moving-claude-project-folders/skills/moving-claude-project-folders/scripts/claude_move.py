@@ -417,17 +417,28 @@ def live_records():
             folders = [folders] if isinstance(folders, str) else folders
             folders = [x for x in (folders or []) if isinstance(x, str)]
             if folders and pid_alive(o.get("pid")):
-                out.append((kind, o.get("pid"), folders))
+                out.append((kind, o.get("pid"), folders, o.get("sessionId")))
     return out
 
 
 def open_inside(paths):
     hits = []
-    for kind, pid, folders in live_records():
+    for kind, pid, folders, _sid in live_records():
         for fo in folders:
             if any(is_under(fo, p) for p in paths):
                 hits.append((kind, pid, fo))
     return hits
+
+
+def open_chats(ids):
+    """Running chats among these chat IDs. A chat move needs only the moving chats closed, not their folders."""
+    ids = set(ids)
+    return [("chat " + sid, pid, folders[0]) for kind, pid, folders, sid in live_records()
+            if kind == "chat" and sid in ids]
+
+
+def describe(hits):
+    return "; ".join("%s (process %s) in %s" % h for h in hits)
 
 
 # ---------------------------------------------------------------- Claude Code CLI
@@ -910,6 +921,9 @@ def cmd_inventory(a):
         say("  %s, process %s: %s" % (kind, pid, fo))
     if not hits:
         say("  none")
+    else:
+        checks.append("open now: %s. A folder move needs them all closed before the test chat; "
+                      "a chat move needs only the chats being moved closed (check-closed --chats)" % describe(hits))
 
     if IS_WIN and old_exists and new:
         longest, lp = 0, ""
@@ -925,10 +939,10 @@ def cmd_inventory(a):
         if longest > 259:
             stops.append("a path would be %d characters after the move, over Windows' 259-character limit: %s" % (longest, short(lp)))
 
-    say("\n== Files that write the old path")
-    roots = [norm(x) for x in (a.search or [])]
-    files = list(config_search_files(skip))
-    if os.path.isdir(base_root):
+    say("\n== Files that write the old path" + ("" if new else ": skipped (no --new, so no path changes)"))
+    roots = [norm(x) for x in (a.search or [])] if new else []
+    files = list(config_search_files(skip)) if new else []
+    if os.path.isdir(base_root) and new:
         files.extend(walk_files(base_root, skip))
     for rt in roots:
         if os.path.exists(rt):
@@ -955,14 +969,15 @@ def cmd_inventory(a):
     byfile = {}
     for h in hits_:
         byfile.setdefault(h["file"], []).append(h)
-    say("  searched %d text files; %d lines in %d files" % (len(uniq), len(hits_), len(byfile)))
+    if new:
+        say("  searched %d text files; %d lines in %d files" % (len(uniq), len(hits_), len(byfile)))
     for f, hs in sorted(byfile.items()):
         say("  %s" % short(f))
         for h in hs[:6]:
             say("      line %d: %s" % (h["line"], snippet(h["text"], (h["matches"] or h["literals"])[0])))
         if len(hs) > 6:
             say("      … %d more lines" % (len(hs) - 6))
-    if IS_WIN:
+    if IS_WIN and new:
         lnk = windows_shortcut_hits(base_root)
         for p in lnk:
             checks.append("shortcut names the folder (fix its target, arguments or start-in folder by hand): " + short(p))
@@ -1271,7 +1286,9 @@ def cmd_check_plan(a):
 
 def cmd_check_closed(a):
     paths = [norm(p) for p in a.paths]
-    hits = open_inside(paths)
+    if not paths and not a.chats:
+        stop("give folders, or --chats with chat IDs")
+    hits = open_inside(paths) + open_chats(a.chats or [])
     for kind, pid, fo in hits:
         print("OPEN: %s, process %s: %s" % (kind, pid, fo))
     print("NOTHING OPEN" if not hits else "SOMETHING IS OPEN")
@@ -1406,8 +1423,8 @@ def cmd_test_chat(a):
     sid = rec["id"]
     if a.action == "move":
         d = norm(a.dir)
-        if open_inside([rec["created_in"], d]):
-            stop("something is open in %s or %s" % (rec["created_in"], d))
+        if open_chats([sid]):
+            stop("the test chat is still running: " + describe(open_chats([sid])))
         src = os.path.join(projects_dir(), rec["chat_folder"])
         dn = find_chat_folder(chat_folder_name(d))
         dst = os.path.join(projects_dir(), dn[0] if dn else chat_folder_name(d))
@@ -1510,8 +1527,9 @@ def cmd_apply(a):
     if problems:
         stop(problems[0])
     hits = open_inside([norm(p) for p in plan["closed_check"]] + [norm(fm["from"]) for fm in plan["folder_moves"]])
+    hits += open_chats([cid for m in plan["chat_moves"] for cid in m["ids"]])
     if hits:
-        stop("still open: " + "; ".join("%s %s in %s" % h for h in hits))
+        stop("still open: " + describe(hits))
     pd = projects_dir()
     rows = backup_of(manifest_rows(bd))
     for r in plan["chat_folder_renames"]:
@@ -1790,7 +1808,7 @@ def cmd_revert(a):
     paths = [norm(p) for p in plan["closed_check"]] + [norm(fm["to"]) for fm in plan["folder_moves"]]
     hits = open_inside(paths)
     if hits:
-        stop("still open: " + "; ".join("%s %s in %s" % h for h in hits))
+        stop("still open: " + describe(hits))
     done = []
     for e in reversed(applied):
         act = e["action"]
@@ -1895,7 +1913,8 @@ def main(argv=None):
     s.add_argument("plan")
     s.add_argument("--out", help="change list file (default: changes.md next to the plan)")
     s = sp.add_parser("check-closed", help="read-only: running chats and editor windows inside these folders")
-    s.add_argument("paths", nargs="+")
+    s.add_argument("paths", nargs="*", help="folder move or memory move: every folder involved")
+    s.add_argument("--chats", nargs="+", help="chat move: only these chat IDs must be closed")
     s = sp.add_parser("backup", help="copy what the plan changes, with fingerprints, and verify the copy")
     s.add_argument("plan")
     s = sp.add_parser("test-chat", help="throwaway chat: create, move, check or remove")
