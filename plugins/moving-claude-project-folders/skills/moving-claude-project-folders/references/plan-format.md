@@ -10,7 +10,7 @@ All paths are full paths. A chat-folder name is the bare name under `<config fol
 |---|---|
 | `description` | One line for the change list's title. |
 | `backup_dir` | Where `backup` writes. Outside every moving folder and outside `<config folder>/projects`. |
-| `closed_check` | Working folders where nothing may be open during `apply` and `revert`. For a chat or memory move: both working folders. |
+| `closed_check` | Working folders where nothing may be open during `apply` and `revert`. For a memory move: both working folders. For a chat move: leave it empty; `apply` checks only the moving chats, by chat ID. |
 | `folder_moves` | `[{"from": "/old/path", "to": "/new/path"}]`. Same drive or file system only. |
 | `path_changes` | Recovery only: `[{"from": "/old/path", "to": "/new/path"}]` for a folder that already moved; used to find and check paths. |
 | `chat_folder_renames` | `[{"from": "<old name>", "to": "<new name>"}]`, one per chat folder, including subfolders' and the repository root's. |
@@ -28,7 +28,7 @@ All paths are full paths. A chat-folder name is the bare name under `<config fol
   "version": 1,
   "description": "Move 3 chats about the website from ~/notes to ~/work/website",
   "backup_dir": "/home/ana/claude-move-backups/261028-101500/backup",
-  "closed_check": ["/home/ana/notes", "/home/ana/work/website"],
+  "closed_check": [],
   "chat_moves": [
     {"from_chat_folder": "-home-ana-notes", "to_chat_folder": "-home-ana-work-website",
      "ids": ["0f1e2d3c-4b5a-4968-8776-655443322110"]}
